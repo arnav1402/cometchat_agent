@@ -1,8 +1,3 @@
-"""
-Groq LLM wrapper. Keeps agent.py decoupled from the provider SDK so you
-could swap providers later without touching orchestration logic.
-"""
-
 from groq import Groq
 from app.config import GROQ_API_KEY, LLM_MODEL
 

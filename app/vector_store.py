@@ -26,7 +26,8 @@ def get_pinecone_client() -> Pinecone:
 
 def ensure_index():
     pc = get_pinecone_client()
-    existing = [idx["name"] for idx in pc.list_indexes()]
+    index_list = pc.list_indexes()
+    existing = [idx.name for idx in index_list]
     if PINECONE_INDEX_NAME not in existing:
         pc.create_index(
             name=PINECONE_INDEX_NAME,
@@ -56,11 +57,10 @@ def build_index():
                 "doc_type": c["doc_type"],
                 "policy_authority": c["policy_authority"],
                 "injection_flagged": c["injection_flagged"],
-                "text": c["text"][:2000],  # Pinecone metadata size limit safeguard
+                "text": c["text"][:2000],
             },
         })
 
-    # batch upsert
     BATCH = 100
     for i in range(0, len(upserts), BATCH):
         index.upsert(vectors=upserts[i:i + BATCH])

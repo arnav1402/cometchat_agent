@@ -1,8 +1,3 @@
-"""
-Local embedding wrapper (sentence-transformers). Loaded once, reused for
-both indexing and query-time embedding so vector spaces match.
-"""
-
 from sentence_transformers import SentenceTransformer
 from app.config import EMBEDDING_MODEL
 
