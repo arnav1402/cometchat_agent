@@ -1,6 +1,4 @@
-from app.agent import handle_turn
-
-
+from app.core.agent import handle_turn
 session_id = "cli-session"
 
 print("CometChat CLI. Type 'exit' to quit.")

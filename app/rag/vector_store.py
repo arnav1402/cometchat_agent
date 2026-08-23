@@ -11,8 +11,8 @@ from app.config import (
     PINECONE_API_KEY, PINECONE_INDEX_NAME, PINECONE_METRIC,
     PINECONE_CLOUD, PINECONE_REGION, EMBEDDING_DIMENSION,
 )
-from app.embeddings import embed_texts
-from app.ingest import load_and_chunk_all
+from app.rag.embeddings import embed_texts
+from app.rag.ingest import load_and_chunk_all
 
 _pc = None
 

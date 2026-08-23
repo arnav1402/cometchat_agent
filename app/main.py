@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from app.agent import handle_turn
+from app.core.agent import handle_turn
 
 app = FastAPI(title="CometChat Support Agent")
 

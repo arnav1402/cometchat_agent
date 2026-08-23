@@ -4,7 +4,7 @@ from pathlib import Path
 import frontmatter
 
 from app.config import KNOWLEDGE_BASE_DIR
-from app.safety import scan_for_injection
+from app.core.safety import scan_for_injection
 
 
 def _derive_doc_type(metadata: dict) -> str:

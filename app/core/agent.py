@@ -1,12 +1,12 @@
 import re
 
-from app.retriever import retrieve
-from app.llm_client import chat_completion
-from app.prompts import SYSTEM_PROMPT, build_user_prompt
-from app.session import get_session, resolve_reference, update_session, _extract_order_id
+from app.rag.retriever import retrieve
+from app.llm.llm_client import chat_completion
+from app.core.prompts import SYSTEM_PROMPT, build_user_prompt
+from app.core.session import get_session, resolve_reference, update_session, _extract_order_id
 from app.tools.order_lookup import lookup_order
-from app.safety import validate_output
-from app.logger import log_trace
+from app.core.safety import validate_output
+from app.core.logger import log_trace
 
 
 def _resolve_order_id_for_turn(message: str, session: dict | None = None) -> str | None:

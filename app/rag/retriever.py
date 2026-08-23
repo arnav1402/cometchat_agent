@@ -1,7 +1,7 @@
 import re
 
-from app.vector_store import get_index
-from app.embeddings import embed_query
+from app.rag.vector_store import get_index
+from app.rag.embeddings import embed_query
 from app.config import TOP_K, SIMILARITY_THRESHOLD
 
 
