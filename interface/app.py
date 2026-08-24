@@ -3,7 +3,7 @@ import streamlit as st
 
 API_BASE = "http://127.0.0.1:8000"
 
-st.title("CometChat Support Agent")
+st.title("Aster & Row Support Agent")
 
 if "session_id" not in st.session_state:
     st.session_state.session_id = "streamlit-session"

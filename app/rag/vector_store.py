@@ -1,10 +1,3 @@
-"""
-Pinecone-backed vector store. Metadata schema per vector:
-  {filename, heading, status, doc_type, policy_authority, injection_flagged}
-Chunk text itself is stored as metadata too (Pinecone doesn't store raw docs
-separately), truncated defensively if very long.
-"""
-
 from pinecone import Pinecone, ServerlessSpec
 
 from app.config import (

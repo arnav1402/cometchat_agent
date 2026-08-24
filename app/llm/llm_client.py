@@ -3,7 +3,6 @@ from app.config import GROQ_API_KEY, LLM_MODEL
 
 _client = None
 
-
 def get_client() -> Groq:
     global _client
     if _client is None:
@@ -12,8 +11,6 @@ def get_client() -> Groq:
 
 
 def chat_completion(messages: list[dict], temperature: float = 0.2, max_tokens: int = 800) -> str:
-    """messages: standard OpenAI-style [{role, content}, ...] list.
-    Groq's chat completions API is OpenAI-compatible."""
     client = get_client()
     response = client.chat.completions.create(
         model=LLM_MODEL,

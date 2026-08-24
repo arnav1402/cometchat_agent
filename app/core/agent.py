@@ -1,4 +1,5 @@
 import re
+import traceback
 
 from app.rag.retriever import retrieve
 from app.llm.llm_client import chat_completion
@@ -125,6 +126,12 @@ def handle_turn(session_id: str, user_message: str) -> dict:
             tool_calls,
             tool_result,
             safe_answer,
-            {"conflict": False, "insufficient": True, "handoff": True, "errors": [str(exc)]},
+            {
+                "conflict": False,
+                "insufficient": True,
+                "handoff": True,
+                "errors": [str(exc)],
+                "traceback": traceback.format_exc(),
+            },
         )
         return {"answer": safe_answer, "sources": [], "handoff": True}
