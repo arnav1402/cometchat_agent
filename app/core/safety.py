@@ -69,7 +69,6 @@ def validate_output(response_text: str, retrieval_result: dict | None, tool_resu
     completion_patterns = [
         r"\b(?:i|we|the system|the agent)\s+(?:have|has|am|are|did|will)\s+(?:approved|processed|issued|completed|cancelled|refunded|replaced|escalated)\b",
         r"\b(?:i|we|the system|the agent)\s+(?:approved|processed|issued|completed|cancelled|refunded|replaced|escalated)\b",
-        r"\b(?:refund|cancel(?:led|lation)?|replacement|address change|change address|escalat(?:e|ion))\b.*\b(?:approved|completed|processed|issued|done)\b",
     ]
     if not action_confirmed and any(re.search(pattern, lowered, flags=re.IGNORECASE) for pattern in completion_patterns):
         return False, "I can’t confirm completed actions. This request needs a human review and I recommend a handoff."

@@ -96,7 +96,13 @@ def handle_turn(session_id: str, user_message: str) -> dict:
                 for c in (retrieval_result or {}).get("chunks", [])
             ]
             if retrieval_result:
-                handoff = bool(retrieval_result.get("conflict") or retrieval_result.get("insufficient"))
+                handoff = bool(
+                    retrieval_result.get("conflict")
+                or retrieval_result.get("insufficient")
+                or retrieval_result.get("handoff_required")
+                )
+            if tool_result and tool_result.get("not_found"):
+                handoff = True
 
         if not sources and tool_result and isinstance(tool_result, dict) and tool_result.get("order"):
             sources = []

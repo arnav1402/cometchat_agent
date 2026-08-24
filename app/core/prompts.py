@@ -42,5 +42,5 @@ Retrieved context:
 Tool result:
 {tool_block}
 
-Answer using only the retrieved context and any explicit tool results. For every policy claim, cite the source in the form filename.md#heading. If there is a conflict between sources or the context is insufficient, say so and recommend a human handoff instead of guessing.
+Answer using only the retrieved context and any explicit tool results. For every policy claim, cite the source in the form filename.md#heading. Include all relevant conditions, exceptions, deadlines, and approval or review requirements found across the retrieved chunks, not only the headline answer. If there is a conflict between sources or the context is insufficient, say so and recommend a human handoff instead of guessing.
 """
