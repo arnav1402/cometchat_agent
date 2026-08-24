@@ -50,7 +50,7 @@ def scan_for_injection(text: str) -> bool:
 
 
 def validate_output(response_text: str, retrieval_result: dict | None, tool_result: dict | None) -> tuple[bool, str]:
-    text = (response_text or "").strip()
+    text = re.sub(r"<think>.*?</think>", "", response_text or "", flags=re.IGNORECASE | re.DOTALL).strip()
     lowered = text.lower()
 
     safe_refusal_phrases = [

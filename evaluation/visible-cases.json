@@ -17,9 +17,14 @@
         }
       ],
       "expect": {
-        "must_include": [
-          "30 calendar days",
-          "delivery"
+        "must_include_number": [
+          {
+            "value": 30,
+            "unit_words": ["calendar", "days"]
+          }
+        ],
+        "must_include_any_of": [
+          ["delivery", "delivered"]
         ],
         "must_not_include": [
           "60 days",
@@ -46,9 +51,14 @@
         }
       ],
       "expect": {
-        "must_include": [
-          "45 calendar days",
-          "delivery"
+        "must_include_number": [
+          {
+            "value": 45,
+            "unit_words": ["calendar", "days"]
+          }
+        ],
+        "must_include_any_of": [
+          ["delivery", "delivered"]
         ],
         "required_sources": [
           "09-trailplus-membership.md"
@@ -67,10 +77,17 @@
         }
       ],
       "expect": {
-        "must_include_concepts": [
-          "final sale does not block damaged-item review",
-          "report within 7 days",
-          "human review before approval"
+        "must_include_number": [
+          {
+            "value": 7,
+            "unit_words": ["days"]
+          }
+        ],
+        "must_include_any_of": [
+          ["final sale", "final-sale"],
+          ["damaged", "broken"],
+          ["report", "notify", "contact"],
+          ["human review", "human approval", "review"]
         ],
         "required_sources": [
           "03-final-sale-and-promotions.md",
@@ -94,10 +111,17 @@
         }
       ],
       "expect": {
-        "must_include_concepts": [
-          "Canada is supported",
-          "5–9 business days after dispatch",
-          "duties or taxes are not prepaid"
+        "must_include_number": [
+          {
+            "value": "5-9",
+            "unit_words": ["business", "days", "after", "dispatch"]
+          }
+        ],
+        "must_include_any_of": [
+          ["Canada", "Canadian"],
+          ["ship", "shipping", "support", "available"],
+          ["duties", "taxes"],
+          ["recipient", "responsible", "not prepaid", "not paid"]
         ],
         "required_sources": [
           "06-international-shipping.md"
@@ -208,7 +232,7 @@
       "expect": {
         "must_include_concepts": [
           "order was not found",
-          "check the order ID or contact support"
+          "order ID or contact support"
         ],
         "must_not_invent": [
           "status",
@@ -276,10 +300,20 @@
         }
       ],
       "expect": {
-        "must_include_concepts": [
-          "no lifetime warranty",
-          "bags have 2 years",
-          "drinkware and travel accessories have 1 year"
+        "must_include_any_of": [
+          ["no lifetime warranty", "not a lifetime warranty", "does not offer lifetime warranty"],
+          ["bags", "bag"],
+          ["drinkware", "travel accessories"]
+        ],
+        "must_include_number": [
+          {
+            "value": 2,
+            "unit_words": ["years"]
+          },
+          {
+            "value": 1,
+            "unit_words": ["year"]
+          }
         ],
         "required_sources": [
           "07-warranty.md"

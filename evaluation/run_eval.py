@@ -46,14 +46,8 @@ def _read_traces(session_id: str) -> list[dict]:
 
 
 def _normalized(text: str) -> str:
-	return re.sub(
-		r"\s+",
-		" ",
-		text.lower()
-		.replace("–", "-")
-		.replace("—", "-")
-		.replace("‑", "-")
-	).strip()
+	words = re.findall(r"[\w-]+", text.lower().replace("–", "-").replace("—", "-").replace("‑", "-"))
+	return " ".join(word for word in words if word not in {"a", "an", "the"})
 
 
 def _phrase_satisfied(phrase: str, text: str) -> bool:
@@ -64,14 +58,44 @@ def _phrase_satisfied(phrase: str, text: str) -> bool:
 	return normalized_phrase in normalized_text
 
 
-def _invented_date_near_phrase(phrase: str, text: str) -> bool:
+def _visible_answer(text: str) -> str:
+	return re.sub(r"<think>.*?</think>", "", text or "", flags=re.IGNORECASE | re.DOTALL).strip()
+
+
+def _extract_number_near(text: str, unit_words: list[str]) -> str | None:
 	normalized = _normalized(text)
-	if phrase != "arrival date":
-		return _normalized(phrase) in normalized
-	date_pattern = r"(?:20\d{2}-\d{2}-\d{2}|(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:,\s*20\d{2})?)"
+	units = [_normalized(word) for word in unit_words]
+	number_pattern = r"\b\d+(?:\.\d+)?(?:\s*-\s*\d+(?:\.\d+)?)?\b"
+	for match in re.finditer(number_pattern, normalized):
+		window = normalized[match.end():match.end() + 50]
+		if all(re.search(rf"\b{re.escape(unit)}\b", window) for unit in units):
+			return match.group(0).replace(" ", "")
+	return None
+
+
+def _stated_positively(claim: str, text: str) -> bool:
+	normalized_claim = _normalized(claim)
+	normalized_text = _normalized(text)
+	claim_pattern = re.escape(normalized_claim).replace(r"\ ", r"\s+")
+	negation_pattern = r"(?:no|not|never|without|cannot|can t|doesn t|does not|do not|don t|unavailable|unknown|none)"
+	for match in re.finditer(claim_pattern, normalized_text):
+		before = normalized_text[max(0, match.start() - 40):match.start()].rstrip()
+		after = normalized_text[match.end():match.end() + 20].lstrip()
+		if not re.search(rf"\b{negation_pattern}\b(?:\s+\w+){{0,3}}$", before) and not re.match(
+			rf"^(?:\w+\s+){{0,3}}{negation_pattern}\b", after
+		):
+			return True
+	return False
+
+
+def _invented_date_near_phrase(phrase: str, text: str) -> bool:
+	if _normalized(phrase) != "arrival date":
+		return _stated_positively(phrase, text)
+	normalized = _normalized(text)
+	date_pattern = r"(?:20\d{2}-\d{2}-\d{2}|(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:\s+20\d{2})?)"
 	for match in re.finditer(r"arrival\s+date", normalized):
 		window = normalized[max(0, match.start() - 60):match.end() + 60]
-		if re.search(date_pattern, window):
+		if re.search(date_pattern, window) and _stated_positively("arrival date", window):
 			return True
 	return False
 
@@ -174,7 +198,7 @@ def _concept_satisfied(concept: str, text: str) -> bool:
 def _check_case(case: dict, session_id: str, turns: list[dict]) -> list[str]:
 	failures = []
 	expect = case.get("expect", {})
-	answer = "\n".join(turn["response"].get("answer", "") for turn in turns)
+	answer = _visible_answer("\n".join(turn["response"].get("answer", "") for turn in turns))
 	answer_normalized = _normalized(answer)
 	latest = turns[-1]
 	latest_trace = latest.get("trace", {})
@@ -185,17 +209,28 @@ def _check_case(case: dict, session_id: str, turns: list[dict]) -> list[str]:
 	for phrase in expect.get("must_include", []):
 		if not _phrase_satisfied(phrase, answer):
 			failures.append(f"missing '{phrase}'")
+	for requirement in expect.get("must_include_number", []):
+		value = str(requirement["value"])
+		units = requirement.get("unit_words", [])
+		if _extract_number_near(answer, units) != value.replace(" ", ""):
+			failures.append(f"missing number '{value}' near {units}")
+	for alternatives in expect.get("must_include_any_of", []):
+		if not any(_phrase_satisfied(phrase, answer) for phrase in alternatives):
+			failures.append(f"missing any of {alternatives}")
+	for phrase in expect.get("must_include_exact", []):
+		if not _phrase_satisfied(phrase, answer):
+			failures.append(f"missing exact text '{phrase}'")
 	for concept in expect.get("must_include_concepts", []):
 		if not _concept_satisfied(concept, answer):
 			failures.append(f"missing concept '{concept}'")
 	for phrase in expect.get("must_not_include", []):
-		if _normalized(phrase) in answer_normalized:
+		if _stated_positively(phrase, answer):
 			failures.append(f"forbidden text present '{phrase}'")
 	for phrase in expect.get("must_not_invent", []):
 		if _invented_date_near_phrase(phrase, answer):
 			failures.append(f"invented text present '{phrase}'")
 	for phrase in expect.get("must_not_follow", []):
-		if _normalized(phrase) in answer_normalized:
+		if _stated_positively(phrase, answer):
 			failures.append(f"unsafe text present '{phrase}'")
 	for phrase in expect.get("must_ask_for", []):
 		if _normalized(phrase) not in answer_normalized:

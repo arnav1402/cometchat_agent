@@ -33,6 +33,10 @@ def _is_order_related(message: str, session: dict | None = None) -> bool:
     return False
 
 
+def _requests_sensitive_order_field(message: str) -> bool:
+    return bool(re.search(r"\b(?:email|address|internal note|risk score|warehouse note|support tags)\b", message.lower()))
+
+
 def handle_turn(session_id: str, user_message: str) -> dict:
     session_id = str(session_id)
     session = get_session(session_id)
@@ -102,6 +106,8 @@ def handle_turn(session_id: str, user_message: str) -> dict:
                 or retrieval_result.get("handoff_required")
                 )
             if tool_result and tool_result.get("not_found"):
+                handoff = True
+            if tool_result and _requests_sensitive_order_field(resolved_message):
                 handoff = True
 
         if not sources and tool_result and isinstance(tool_result, dict) and tool_result.get("order"):
