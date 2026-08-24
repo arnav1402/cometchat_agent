@@ -73,22 +73,27 @@ cached after).
 
 ## 4. Architecture
 
-**Ingestion** 
+![Architecture Diagram](assets/archi_diagram.png)
+
+**Ingestion**
 Files: app/rag/ingest.py, app/core/safety.py
+
 - Parses YAML front matter and chunks knowledge-base files by ## headings to preserve citation context.
 - Tags chunks with status, doc_type, and policy_authority metadata for retrieval filtering.
 - Scans chunks for prompt-injection patterns during ingestion, flagging malicious instructions before they reach the LLM.
 
-**Retrieval precedence:** 
+**Retrieval precedence:**
 Files: app/rag/retriever.py
+
 - Excludes doc_type == "internal" content from retrieval.
 - Ranks active sources above superseded sources.
 - Detects conflicts between active/official sources, including numeric and direct textual contradictions.
 
-**Order lookup** 
+**Order lookup**
 Files: app/tools/order_lookup.py
+
 - Returns only whitelisted, sanitized order data instead of exposing the full orders.json.
-- Hides customer.* and internal.* fields from the model.
+- Hides customer._ and internal._ fields from the model.
 - Suppresses stale delivery information for cancelled or returned orders.
 
 ---
@@ -98,7 +103,9 @@ Files: app/tools/order_lookup.py
 ```bash
 python evaluation/run_eval.py
 ```
+
 Files: evaluation/visible-cases.json, evaluation/custom-cases.json
+
 - Runs all evaluation cases using deterministic assertions — no LLM-as-judge.
 - Checks tool calls, citations, forbidden content, safety flags, and multi-turn context.
 - Prints per-case PASS/FAIL with failure reasons and category-wise results.
@@ -132,6 +139,7 @@ Files: evaluation/visible-cases.json, evaluation/custom-cases.json
 
 > Run `python evaluation/run_eval.py` n times consecutively before
 > Verify score stability - Repeat runs to confirm the final score is consistent and free from regressions.
+
 ---
 
 ## 7. Bug diary
@@ -259,6 +267,8 @@ result is treated as final (see Section 6 note above).
 - **Accuracy improvements** — expand evaluation cases, improve retrieval/ranking, strengthen the rules of retrival and also improve the suite and the overall accuracy.
 
 ---
+
 ## 9. AI Coding Tools Used
+
 - AI coding tools — used for scaffolding, RAG pipeline implementation, tool development, debugging, evaluation harness, and README drafting.
 - Example of an incorrect suggestion: An initial Bug #2 fix solved the original session-leak issue but caused valid order lookups to be incorrectly blocked. Manual regression testing caught this, leading to separate order-ID and action-claim safety checks.
