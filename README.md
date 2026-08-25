@@ -16,7 +16,6 @@ safety controls against unsafe retrieved content and prompt injection.
 ## Video link and some images
 
 ![Tests using session context](assets/img1_test.png)
-
 ![Tests rejecting and using Handoff](assets/img2_test.png)
 
 ## 1. Setup and run instructions (clean clone)
