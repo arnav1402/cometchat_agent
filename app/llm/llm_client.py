@@ -17,16 +17,23 @@ def get_client() -> Groq:
     return _client
 
 
-def chat_completion(messages: list[dict], temperature: float = 0.2, max_tokens: int = 800) -> str:
+def chat_completion(messages: list[dict], temperature: float = 0.2, max_tokens: int = 350) -> str:
     client = get_client()
+    completion_options = {
+        "model": LLM_MODEL,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+    model_name = LLM_MODEL.lower()
+    if "qwen" in model_name:
+        completion_options["reasoning_effort"] = "none"
+    elif "gpt-oss" in model_name:
+        completion_options["reasoning_format"] = "hidden"
+
     for attempt in range(_MAX_RATE_LIMIT_RETRIES + 1):
         try:
-            response = client.chat.completions.create(
-                model=LLM_MODEL,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
+            response = client.chat.completions.create(**completion_options)
             if attempt:
                 _log_rate_limit_event("recovered", attempt, None)
             return response.choices[0].message.content
