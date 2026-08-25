@@ -21,6 +21,7 @@ safety controls against unsafe retrieved content and prompt injection.
 - Safety & Human Handoff Controls
 - Deterministic Evaluation Suite
 - Regression Testing
+
 ---
 
 ## Video link and some images
@@ -203,12 +204,13 @@ no confident claim. Re-verified no false negative on a genuinely sparse
 but covered topic (unsupported shipping destination).
 **Beyond visible cases** — found via manual adversarial testing.
 
->Further bugs in /Bug_diary.md
+> Further bugs in /Bug_diary.md
 
 ---
 
 ## 8. Known limitations
 
+- **No self-correction loop on validation failure** — when validate_output rejects a response, the system falls back to a generic safe message rather than re-prompting the model to fix the specific issue; a bounded retry loop (1-2 attempts, feeding the failure reason back to the model) could improve response quality before falling back to a handoff.
 - **In-memory sessions** — lost on restart; production should use Redis or a database-backed store.
 - **LLM-fine tuning** — the agent relies entirely on prompting a general-purpose model rather than a model fine-tuned on Aster & Row's policies and tone
 - **Heuristic context resolution** — handles common follow-up patterns but may miss unusual phrasing.
