@@ -15,7 +15,11 @@ safety controls against unsafe retrieved content and prompt injection.
 
 ## Video link and some images
 
-!(https://github.com/user-attachments/assets/48c11886-daa1-4f79-9e00-c853d0744853)
+<video
+  src="https://github.com/user-attachments/assets/48c11886-daa1-4f79-9e00-c853d0744853"
+  width="800"
+  controls>
+</video>
 
 ![Tests using session context](assets/img1_test.png)
 
