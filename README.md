@@ -15,6 +15,8 @@ safety controls against unsafe retrieved content and prompt injection.
 
 ## Video link and some images
 
+!(https://github.com/user-attachments/assets/48c11886-daa1-4f79-9e00-c853d0744853)
+
 ![Tests using session context](assets/img1_test.png)
 
 ![Tests rejecting and using Handoff](assets/img2_test.png)
